@@ -1,0 +1,231 @@
+def encrypt_caesar(plaintext, key):
+    """Encrypt the plaintext using the Caesar cipher with a given key."""
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    plaintext = plaintext.upper()
+    ciphertext = ""
+    for char in plaintext:
+        if char in alphabet:
+            ciphertext += alphabet[(alphabet.index(char) + key) % len(alphabet)]
+        else:
+            ciphertext += char
+    return ciphertext
+
+def decrypt_caesar(ciphertext, key):
+    """Decrypt the ciphertext using the Caesar cipher with a given key."""
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    plaintext = ""
+    for char in ciphertext:
+        if char in alphabet:
+            plaintext += alphabet[(alphabet.index(char) - key) % len(alphabet)]
+        else:
+            plaintext += char
+    return plaintext
+
+def encrypt_transposition(plaintext, key):
+    """Encrypt the plaintext using the transposition cipher with a given key."""
+    plaintext = plaintext.upper()
+    columns = len(key)
+    rows = (len(plaintext) // columns) + (1 if len(plaintext) % columns else 0)
+    plaintext_matrix = [list(plaintext[i:i+columns]) for i in range(0, len(plaintext), columns)]
+    for i in range(rows - len(plaintext_matrix)):
+        plaintext_matrix.append([""] * columns)
+    ciphertext = ""
+    for column_index in key:
+        for row in plaintext_matrix:
+            ciphertext += row[column_index]
+    return ciphertext
+
+def decrypt_transposition(ciphertext, key):
+    """Decrypt the ciphertext using the transposition cipher with a given key."""
+    columns = len(key)
+    rows = len(ciphertext) // columns
+    ciphertext_matrix = [list(ciphertext[i:i+rows]) for i in range(0, len(ciphertext), rows)]
+    for i in range(columns - len(ciphertext_matrix)):
+        ciphertext_matrix.append([""] * rows)
+    sorted_key = sorted(range(len(key)), key=lambda x: key[x])
+    plaintext = ""
+    for row in range(rows):
+        for column_index in sorted_key:
+            plaintext += ciphertext_matrix[column_index][row]
+    return plaintext
+
+def encrypt_vigenere(plaintext, key):
+    """Encrypt the plaintext using the Vigenère cipher with a given key."""
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    plaintext = plaintext.upper()
+    key = key.upper()
+    key_index = 0
+    ciphertext = ""
+    for char in plaintext:
+        if char in alphabet:
+            ciphertext += alphabet[(alphabet
+    key_index = (key_index + 1) % len(key)
+        else:
+            ciphertext += char
+    return ciphertext
+
+def decrypt_vigenere(ciphertext, key):
+    """Decrypt the ciphertext using the Vigenère cipher with a given key."""
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    plaintext = ""
+    key = key.upper()
+    key_index = 0
+    for char in ciphertext:
+        if char in alphabet:
+            plaintext += alphabet[(alphabet.index(char) - alphabet.index(key[key_index])) % len(alphabet)]
+            key_index = (key_index + 1) % len(key)
+        else:
+            plaintext += char
+    return plaintext
+
+def encrypt_morse(plaintext):
+    """Encrypt the plaintext using Morse code."""
+    morse_code = {
+        "A": ".-", "B": "-...", "C": "-.-.", "D": "-..", "E": ".",
+        "F": "..-.", "G": "--.", "H": "....", "I": "..", "J": ".---",
+        "K": "-.-", "L": ".-..", "M": "--", "N": "-.", "O": "---",
+        "P": ".--.", "Q": "--.-", "R": ".-.", "S": "...", "T": "-",
+        "U": "..-", "V": "...-", "W": ".--", "X": "-..-", "Y": "-.--",
+        "Z": "--..", " ": " ", "1": ".----", "2": "..---", "3": "...--",
+        "4": "....-", "5": ".....", "6": "-....", "7": "--...", "8": "---..",
+        "9": "----.", "0": "-----"
+    }
+    plaintext = plaintext.upper()
+    ciphertext = " ".join(morse_code[char] for char in plaintext)
+    return ciphertext
+
+def decrypt_morse(ciphertext):
+    """Decrypt the ciphertext from Morse code."""
+    morse_code = {
+        "A": ".-", "B": "-...", "C": "-.-.", "D": "-..", "E": ".",
+        "F": "..-.", "G": "--.", "H": "....", "I": "..", "J": ".---",
+        "K": "-.-", "L": ".-..", "M": "--", "N": "-.", "O": "---",
+        "P": ".--.", "Q": "--.-", "R": ".-.", "S": "...", "T": "-",
+        "U": "..-", "V": "...-", "W": ".--", "X": "-..-", "Y": "-.--",
+        "Z": "--..", " ": " ", "1": ".----", "2": "..---", "3": "...--",
+        "4": "....-", "5": ".....", "6": "-....", "7": "--...", "8
+        "9": "----.", "0": "-----"
+    }
+    morse_code = {v: k for k, v in morse_code.items()}
+    ciphertext = ciphertext.split(" ")
+    plaintext = "".join(morse_code[char] for char in ciphertext)
+    return plaintext
+
+def encrypt_rail_fence(plaintext, num_rails):
+    """Encrypt the plaintext using the Rail Fence cipher with a given number of rails."""
+    rail = [[None] * len(plaintext) for _ in range(num_rails)]
+    rail_index, direction = 0, -1
+    for i, char in enumerate(plaintext):
+        rail[rail_index][i] = char
+        if rail_index == 0 or rail_index == num_rails - 1:
+            direction *= -1
+        rail_index += direction
+    ciphertext = "".join("".join(row) for row in rail)
+    return ciphertext
+
+def decrypt_rail_fence(ciphertext, num_rails):
+    """Decrypt the ciphertext from the Rail Fence cipher with a given number of rails."""
+    rail = [[None] * len(ciphertext) for _ in range(num_rails)]
+    rail_index, direction = 0, -1
+    for i, char in enumerate(ciphertext):
+        rail[rail_index][i] = char
+        if rail_index == 0 or rail_index == num_rails - 1:
+            direction *= -1
+        rail_index += direction
+    indices = [i for rail in rail for i, char in enumerate(rail) if char is not None]
+    plaintext = "".join(ciphertext[i] for i in indices)
+    return plaintext
+
+def encrypt_bacon(plaintext):
+    """Encrypt the plaintext using the Bacon cipher."""
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    bacon_code = {
+        "A": "AAAAA", "B": "AAAAB", "C": "AAABA", "D": "AAABB",
+        "E": "AABAA", "F": "AABAB", "G": "AABBA", "H": "AABBB",
+        "I": "ABAAA", "J": "ABAAA", "K": "ABAAB", "L": "ABABA",
+        "M": "ABABB", "N": "ABBAA", "O": "ABBAB", "P": "ABBBA",
+        "Q": "ABBBB", "R": "BAAAA", "S": "BAAAB", "T": "BAABA",
+        "U": "BAABB", "V": "BAABB", "W": "BABAA", "X": "BABAB",
+        "Y": "BABBA", "Z": "BABBB"
+    }
+    plaintext = plaintext.upper()
+    ciphertext = "".join(bacon_code[char] for char in plaintext if char in alphabet)
+    return ciphertext
+
+def decrypt_bacon(ciphertext):
+    """Decrypt the ciphertext from the Bacon cipher."""
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    bacon_code = {
+        "A": "AAAAA", "B": "AAAAB", "C": "AAABA", "D": "AAABB",
+        "E": "AABAA", "F": "AABAB", "G": "AABBA", "H": "AABBB",
+        "I": "ABAAA", "J": "ABAAA", "K": "ABAAB", "L": "ABABA",
+        "M": "ABABB", "N": "ABBAA", "O": "ABBAB", "P": "ABBBA",
+        "Q": "ABBBB", "R": "BAAAA", "S": "BAAAB", "T": "BAABA",
+        "U": "BAABB", "V": "BAABB", "W": "BABAA", "X": "BABAB",
+        "Y": "BABBA", "Z": "BABBB"
+    }
+    bacon_code = {v: k for k, v in bacon_code.items()}
+    ciphertext = [ciphertext[i:i+5] for i in range(0, len(ciphertext), 5)]
+    plaintext = "".join(bacon_code[char] for char in ciphertext if char in bacon_code)
+    return plaintext
+
+if name == "main":
+    choice = input("Choose a cipher (1-6):\n1. Caesar\n2. Transposition\n3. Vigenere\n4. Morse code\n5. Rail fence\n6. Bacon\n")
+    if choice == "1":
+        mode = input("Choose mode (1. Encrypt, 2. Decrypt): ")
+        if mode == "1":
+            plaintext = input("Enter plaintext: ")
+            key = int(input("Enter key: "))
+            print("Ciphertext:", encrypt_caesar(plaintext, key))
+        elif mode == "2":
+            ciphertext = input("Enter ciphertext: ")
+            key = int(input("Enter key: "))
+            print("Plaintext:", decrypt_caesar(ciphertext, key))
+    elif choice == "2":
+        mode = input("Choose mode (1. Encrypt, 2. Decrypt): ")
+        if mode == "1":
+            plaintext = input("Enter plaintext: ")
+            key = int(input("Enter key: "))
+            print("Ciphertext:", encrypt_transposition(plaintext, key))
+        elif mode == "2":
+            ciphertext = input("Enter ciphertext: ")
+            key = int(input("Enter key: "))
+            print("Plaintext:", decrypt_transposition(ciphertext, key))
+    elif choice == "3":
+        mode = input("Choose mode (1. Encrypt, 2. Decrypt): ")
+        if mode == "1":
+            plaintext = input("Enter plaintext: ")
+            key = input("Enter key: ")
+            print("Ciphertext:", encrypt_vigenere(plaintext, key))
+        elif mode == "2":
+        ciphertext = input("Enter ciphertext: ")
+key = input("Enter key: ")
+print("Plaintext:", decrypt_vigenere(ciphertext, key))
+elif choice == "4":
+mode = input("Choose mode (1. Encrypt, 2. Decrypt): ")
+if mode == "1":
+plaintext = input("Enter plaintext: ")
+print("Ciphertext:", encrypt_morse(plaintext))
+elif mode == "2":
+ciphertext = input("Enter ciphertext: ")
+print("Plaintext:", decrypt_morse(ciphertext))
+elif choice == "5":
+mode = input("Choose mode (1. Encrypt, 2. Decrypt): ")
+if mode == "1":
+plaintext = input("Enter plaintext: ")
+key = int(input("Enter key: "))
+print("Ciphertext:", encrypt_rail_fence(plaintext, key))
+elif mode == "2":
+ciphertext = input("Enter ciphertext: ")
+key = int(input("Enter key: "))
+print("Plaintext:", decrypt_rail_fence(ciphertext, key))
+elif choice == "6":
+mode = input("Choose mode (1. Encrypt, 2. Decrypt): ")
+if mode == "1":
+plaintext = input("Enter plaintext: ")
+print("Ciphertext:", encrypt_bacon(plaintext))
+elif mode == "2":
+ciphertext = input("Enter ciphertext: ")
+print("Plaintext:", decrypt_bacon(ciphertext))
+else:
+print("Invalid choice")
